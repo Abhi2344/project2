@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #container{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    form{
+        width: 10%;
+    }
+    input{
+        margin-top: 10%;
+    }
+    button{
+        margin-top: 2%;
+    }
+</style>
+<body>
+    <div id="container">
+        <div id="ragister-form">
+            <form>
+            <input type="text" id="name" placeholder="name">
+            <input type="email" id="email" placeholder="email">
+            <input type="password" id="password" placeholder="password">
+            <input type="text" id="username" placeholder="username">
+            <input type="number" id="mobile" placeholder="mobile">
+            <input type="text" id="description" placeholder="description">
+            </form>
+            <button onclick="ragister()">ragister</button>
+        </div>
+        <div id="login-form">
+            <form>
+            <input type="text" id="login-username" placeholder="username">
+            <input type="password" id="login-password" placeholder="password">
+            </form>
+            <button onclick="login()">login</button>
+        </div>
+        
+    </div>
+</body>
+</html>
+<script>
+
+function x(id){
+    let value = document.getElementById(id).value;
+    return value;
+}
+
+function User(n,e,p,u,m,d){
+    this.name = n;
+    this.email = e;
+    this.password = p;
+    this.username = u;
+    this.mobile = m;
+    this.description = d;
+}
+
+    async function ragister(){
+
+
+        const name = x('name');
+        const email = x('email');
+        const password = x('password');
+        const username = x('username');
+        const mobile = x('mobile');
+        const description = x('description');
+
+        let user_data = new User(name,email,password,username,mobile,description)
+        console.log('user_data:',user_data);
+        // /auth/register
+
+        const register_url = `https://masai-api-mocker.herokuapp.com/auth/register`
+        let res = await fetch(register_url,{
+            method: 'POST',
+            body: JSON.stringify(user_data),
+            headers:{
+                'Content-Type':'application/json'
+            },
+        });
+        let data = await res.json()
+        console.log('data:',data)
+    }
+
+//     function y(id){
+//     let value = document.getElementById(id).value;
+//     return value;
+// }
+
+
+    async function login(){
+        let login_data = {
+            username: document.getElementById('login-username').value,
+            password: document.getElementById('login-password').value,
+
+        }
+
+        const login_url =`https://masai-api-mocker.herokuapp.com/auth/login`
+
+       let res = await fetch(login_url,{
+            method: 'POST',
+            body: JSON.stringify(login_data),
+            headers:{
+                'Content-Type':'application/json',
+            },
+        });
+
+        let data = await res.json();
+        let token = data.token
+       getProfile(login_data.username,token)
+
+    }
+
+
+    async function getProfile(username,token){
+        let api = `https://masai-api-mocker.herokuapp.com/user/${username}`
+         
+         let res = await fetch(api,{
+            headers:{
+                'Content-Type':'application/json',
+
+                Authorization: `Bearer ${token}`,
+            },
+         });
+
+         let data = await res.json();
+         console.log('data:',data)
+    
+    }
+
+
+</script>
